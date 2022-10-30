@@ -1,0 +1,46 @@
+{
+  "name": "@docsploit/espress",
+  "version": "1.0.1",
+  "description": "Customized express.js boilerplate",
+  "main": "build/index.js",
+  "types": "build/index.ts",
+  "author": "Robert Devasia",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier --write \"core/**/*.ts\" \"build/**/*.js\"",
+    "lint": "tslint -p tsconfig.json"
+  },
+  "dependencies": {
+    "ajv": "latest",
+    "ajv-formats": "latest",
+    "chalk": "^4.1.2",
+    "cors": "latest",
+    "dotenv": "^16.0.3",
+    "ejs": "^3.1.8",
+    "express": "latest",
+    "multer": "latest",
+    "typescript": "latest",
+    "morgan": "latest",
+    "cli-table": "^0.3.11"
+  },
+  "devDependencies": {
+    "@types/cli-table": "^0.3.1",
+    "@types/cors": "^2.8.12",
+    "@types/ejs": "^3.1.1",
+    "@types/express": "latest",
+    "@types/morgan": "latest",
+    "@types/multer": "latest",
+    "@types/node": "latest",
+    "nodemon": "latest",
+    "prettier": "^2.7.1",
+    "ts-node": "latest",
+    "tsconfig-replace-paths": "latest",
+    "tslint": "^6.1.3",
+    "tslint-config-prettier": "^1.18.0"
+  },
+  "files": [
+    "build/**/*"
+  ]
+}
