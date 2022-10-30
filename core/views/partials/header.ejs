@@ -1,0 +1,16 @@
+<div
+  class="sidebar col-3 position-fixed d-flex flex-column bg-dark"
+  data-links="sidebar"
+>
+  <div class="col-12">
+    <p class="display-6 my-3 mx-auto text-center"><%= name %> APIs</p>
+  </div>
+  <% for( let i = 0; i < modules.length; i++ ) { %>
+  <a
+    href="/api/docs/<%- modules[i].toLowerCase()%>"
+    data-route="auth"
+    class="text-decoration-none col-12 p-2 <%- data.name===modules[i]?'active':'' %>"
+    ><%- modules[i] %></a
+  >
+  <% } %>
+</div>
