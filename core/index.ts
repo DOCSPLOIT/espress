@@ -17,7 +17,7 @@ export class Server {
     this.app.use(morgan('combined'));
     this.app.use(cors(_cors));
     this.app.use('/api', router);
-    this.app.set('views', path.join(__dirname, './views'))
+    this.app.set('views', path.join(__dirname, './views'));
     this.app.set('view engine', 'ejs' as any);
 
     this.app.use('/static', express.static(path.join(__dirname, 'static')));
@@ -214,9 +214,9 @@ export const _modules: ModuleObject<JSONSchemaType<any>>[] = [];
 
 export const router = Router();
 
-export type Req = Request
+export type Req = Request;
 
-export type Res = Response
+export type Res = Response;
 
 interface ModuleObject<T> {
   name: string;

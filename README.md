@@ -47,6 +47,11 @@ export default class Auth {
 }
 ```
 
+Server by default runs at port 5000 if no $PORT provided.
+Automated documentation is available based on the modules.
+`http://localhost:5000/api/docs`
+**Note : module methods' name is considered to be api route name. So define method name precisely.**
+
 ## API
 
 ### `class` Server

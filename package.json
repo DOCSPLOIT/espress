@@ -2,14 +2,14 @@
   "name": "@docsploit/espress",
   "version": "1.0.1",
   "description": "Customized express.js boilerplate",
-  "main": "build/index.js",
-  "types": "build/index.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "author": "Robert Devasia",
   "license": "MIT",
   "private": false,
   "scripts": {
     "build": "tsc",
-    "format": "prettier --write \"core/**/*.ts\" \"build/**/*.js\"",
+    "format": "prettier --write \"core/**/*.ts\" \"lib/**/*.js\"",
     "lint": "tslint -p tsconfig.json"
   },
   "dependencies": {
