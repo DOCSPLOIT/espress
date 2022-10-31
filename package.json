@@ -2,8 +2,6 @@
   "name": "@docsploit/espress",
   "version": "1.0.3",
   "description": "Customized express.js boilerplate",
-  "main": "lib",
-  "types": "lib",
   "author": "Robert Devasia",
   "license": "MIT",
   "private": false,
@@ -41,6 +39,6 @@
     "tslint-config-prettier": "^1.18.0"
   },
   "files": [
-    "build/**/*"
+    "dist/**/*"
   ]
 }
