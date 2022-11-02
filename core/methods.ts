@@ -13,9 +13,7 @@ export function GET<T>(
   return (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
     const response = async (req: Request, res: Response) => {
       try {
-        if (schema !== undefined) {
-          console.log(req.body);
-
+        if (schema !== undefined && Object.keys(req.query).length > 0) {
           const valid = validate(schema, req.query);
           if (valid === true) {
             return await descriptor.value(req, res);
@@ -42,8 +40,6 @@ export function POST<T>(
     const response = async (req: Request, res: Response) => {
       try {
         if (schema !== undefined) {
-          console.log(req.body);
-
           const valid = validate(schema, req.body);
           if (valid === true) {
             return await descriptor.value(req, res);
@@ -70,8 +66,6 @@ export function PUT<T>(
     const response = async (req: Request, res: Response) => {
       try {
         if (schema !== undefined) {
-          console.log(req.body);
-
           const valid = validate(schema, req.body);
           if (valid === true) {
             return await descriptor.value(req, res);
