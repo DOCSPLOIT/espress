@@ -8,15 +8,15 @@ import cors, { CorsOptions } from 'cors';
 import Table from 'cli-table';
 import path from 'path';
 import { JSONSchemaType } from 'ajv';
+import { readFileSync } from 'fs';
 export class Server {
   app = express();
+  express = express
 
   constructor({ limit, _cors }: { limit?: string; _cors?: CorsOptions }, modules: undefined, name: string) {
-    const port = process.env.PORT || 5000;
     this.app.use(express.json({ limit }));
     this.app.use(morgan('combined'));
     this.app.use(cors(_cors));
-    this.app.use('/api', router);
     this.app.set('views', path.join(__dirname, './views'));
     this.app.set('view engine', 'ejs' as any);
 
@@ -28,7 +28,7 @@ export class Server {
     this.app.get('/api/docs/:module', (req, res) => {
       const moduleName = req.params.module;
       const resp: Partial<ModuleObject<{ property: string; type: string; isRequired: boolean }[]>> = {};
-      const espressModules = [];
+      const espressModules: any[] = [];
       for (const data of _modules) {
         espressModules.push(data.name);
         if (data.name.toLocaleLowerCase() === moduleName) {
@@ -62,13 +62,30 @@ export class Server {
           }
         }
       }
-      res.render('index', { modules: espressModules, data: resp, name });
+      res.render('index', { modules: espressModules.reverse(), data: resp, name });
     });
 
+
+    // Settings up static path
+    const projectPath = path.join(process.cwd(), '.espressive');
+    const json = JSON.parse(readFileSync(projectPath).toString('utf-8'))
+    for (let _folderPath of json.framework.assets) {
+      this.app.use(express.static(path.join(process.cwd(), _folderPath)))
+    }
+
+  }
+
+  setStaticFolder(path = '', folderPath: string) {
+    this.app.set(path, express.static(folderPath))
+  }
+  run() {
+    const port = process.env.PORT || 5000;
+    this.app.use('/api', router);
     this.app.listen(port, () => {
       console.log(bold`Express server is running on`, blueBright('http://localhost:' + port));
     });
   }
+
 }
 
 export function register(_path: string, controller: InstanceType<any>) {

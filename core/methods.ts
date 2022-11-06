@@ -18,11 +18,11 @@ export function GET<T>(
           if (valid === true) {
             return await descriptor.value(req, res);
           } else {
-            sendErrorResponse(400, { ...valid }, res);
+            return sendErrorResponse(400, { ...valid }, res);
           }
         } else return await descriptor.value(req, res);
       } catch (error) {
-        sendErrorResponse(500, 'Internal Server Error', res);
+        return sendErrorResponse(500, 'Internal Server Error', res);
       }
     };
     target[`GET-${propertyKey.toString()}`] = { pathname, middleware, response, schema, responses, example };
@@ -44,11 +44,11 @@ export function POST<T>(
           if (valid === true) {
             return await descriptor.value(req, res);
           } else {
-            sendErrorResponse(400, { ...valid }, res);
+            return sendErrorResponse(400, { ...valid }, res);
           }
         } else return await descriptor.value(req, res);
       } catch (error) {
-        sendErrorResponse(500, 'Internal Server Error', res);
+        return sendErrorResponse(500, 'Internal Server Error', res);
       }
     };
     target[`POST-${propertyKey.toString()}`] = { pathname, middleware, response, schema, responses, example };
@@ -70,11 +70,11 @@ export function PUT<T>(
           if (valid === true) {
             return await descriptor.value(req, res);
           } else {
-            sendErrorResponse(400, { ...valid }, res);
+            return sendErrorResponse(400, { ...valid }, res);
           }
         } else return await descriptor.value(req, res);
       } catch (error) {
-        sendErrorResponse(500, 'Internal Server Error', res);
+        return sendErrorResponse(500, 'Internal Server Error', res);
       }
     };
     target[`PUT-${propertyKey.toString()}`] = { pathname, middleware, response, schema, responses, example };
@@ -87,7 +87,7 @@ export function DELETE(pathname: string, middleware: any[] = [], responses?: Api
       try {
         return await descriptor.value(req, res);
       } catch (error) {
-        sendErrorResponse(500, 'Internal Server Error', res);
+        return sendErrorResponse(500, 'Internal Server Error', res);
       }
     };
     target[`DELETE-${propertyKey.toString()}`] = { pathname, middleware, response, responses, example };
