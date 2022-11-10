@@ -3,7 +3,7 @@ import multer, { Field, MulterError } from 'multer';
 import path from 'path';
 import { sendErrorResponse } from './utils';
 
-export function multerSingleHandler(keyName: string, folderPath: string, mimeType: string) {
+export function multerSingleHandler(keyName: string, folderPath: string, mimeTypes: string[]) {
   const imageStorage = multer.diskStorage({
     // Destination to store image
     destination: folderPath,
@@ -19,7 +19,7 @@ export function multerSingleHandler(keyName: string, folderPath: string, mimeTyp
       fileSize: 1000000, // 1000000 Bytes = 1 MB
     },
     fileFilter(req, file, cb) {
-      if (file.mimetype === mimeType) {
+      if (mimeTypes.includes(file.mimetype)) {
         // Check if file is an image , you can change the condition
         // upload only png and jpg format
         return cb(null, true);
@@ -38,7 +38,7 @@ export function multerSingleHandler(keyName: string, folderPath: string, mimeTyp
             return sendErrorResponse(400, 'Field must be ' + keyName, res);
           }
           if ((err as any).code === 'INVALID_FILE') {
-            return sendErrorResponse(400, 'Please upload PNG,JPEG,JPG files', res);
+            return sendErrorResponse(400, 'Please upload ' + mimeTypes.toString().toUpperCase() + ' files', res);
           }
         }
       } else {
@@ -48,7 +48,7 @@ export function multerSingleHandler(keyName: string, folderPath: string, mimeTyp
   };
 }
 
-export function multerMultiFieldHandler(keyNames: Field[], folderPath: string, mimeType: string) {
+export function multerMultiFieldHandler(keyNames: Field[], folderPath: string, mimeTypes: string[]) {
   const imageStorage = multer.diskStorage({
     // Destination to store image
     destination: folderPath,
@@ -64,12 +64,9 @@ export function multerMultiFieldHandler(keyNames: Field[], folderPath: string, m
     storage: imageStorage,
     limits: { fieldSize: 25 * 1024 * 1024 },
     fileFilter(req, file, cb) {
-      if (!file.originalname.match(/\.(png|jpg)$/)) {
-        // Check if file is an image , you can change the condition
-        // upload only png and jpg format
-        return cb(new Error('Please upload a Image'));
-      }
-      cb(null, true);
+      if (mimeTypes.includes(file.mimetype)) {
+        cb(null, true);
+      } else cb(new (MulterError as any)('INVALID_FILE', keyNames));
     },
   });
   const upload = imageUpload.fields(keyNames);
@@ -82,12 +79,15 @@ export function multerMultiFieldHandler(keyNames: Field[], folderPath: string, m
             return sendErrorResponse(400, 'File size cannot exceed 1 Mb', res);
           }
           if (err.code === 'LIMIT_UNEXPECTED_FILE') {
-            return sendErrorResponse(400, 'File must be ' + mimeType, res);
+            return sendErrorResponse(400, 'File must be ' + mimeTypes, res);
           }
           if ((err as any).code === 'INVALID_FILE') {
-            return sendErrorResponse(400, 'Please upload PNG,JPEG,JPG files', res);
+            return sendErrorResponse(400, 'Please upload ' + mimeTypes.toString().toUpperCase() + ' files', res);
           }
         }
+        console.log(err);
+        return sendErrorResponse(500, 'Internal Server Error', res)
+
       } else {
         next();
       }

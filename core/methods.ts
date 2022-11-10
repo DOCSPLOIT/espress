@@ -1,4 +1,5 @@
 import { JSONSchemaType } from 'ajv';
+import chalk from 'chalk';
 import { Request, Response } from 'express';
 import { sendErrorResponse } from './utils';
 import validate from './validator';
@@ -22,6 +23,8 @@ export function GET<T>(
           }
         } else return await descriptor.value(req, res);
       } catch (error) {
+        console.log(error);
+
         return sendErrorResponse(500, 'Internal Server Error', res);
       }
     };
@@ -39,15 +42,20 @@ export function POST<T>(
   return (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
     const response = async (req: Request, res: Response) => {
       try {
-        if (schema !== undefined) {
+        if (schema !== undefined && req.headers['content-type'] === "application/json") {
           const valid = validate(schema, req.body);
           if (valid === true) {
             return await descriptor.value(req, res);
           } else {
             return sendErrorResponse(400, { ...valid }, res);
           }
-        } else return await descriptor.value(req, res);
+        } else {
+          console.log(chalk.yellow`@Validator::warning :\n\tRequest body is NOT type of 'application/json' ignoring...`);
+
+          return await descriptor.value(req, res);
+        }
       } catch (error) {
+        console.log(error);
         return sendErrorResponse(500, 'Internal Server Error', res);
       }
     };
@@ -65,15 +73,22 @@ export function PUT<T>(
   return (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
     const response = async (req: Request, res: Response) => {
       try {
-        if (schema !== undefined) {
+        if (schema !== undefined && req.headers['content-type'] === "application/json") {
           const valid = validate(schema, req.body);
           if (valid === true) {
             return await descriptor.value(req, res);
           } else {
             return sendErrorResponse(400, { ...valid }, res);
           }
-        } else return await descriptor.value(req, res);
+        } else {
+          if (schema !== undefined) {
+            console.log(chalk.yellow`JSON-Validation request body is NOT type of application/json ignore=ing...`);
+
+          }
+          return await descriptor.value(req, res);
+        }
       } catch (error) {
+        console.log(error)
         return sendErrorResponse(500, 'Internal Server Error', res);
       }
     };
@@ -87,6 +102,7 @@ export function DELETE(pathname: string, middleware: any[] = [], responses?: Api
       try {
         return await descriptor.value(req, res);
       } catch (error) {
+        console.log(error)
         return sendErrorResponse(500, 'Internal Server Error', res);
       }
     };
