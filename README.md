@@ -233,6 +233,11 @@ by default `/static` folder and 404.html file is created when initializing proje
 - Files in `/static` folder can be access through root path
 - rest of the static folders can be accessed through the same name passed in .espress file.
 
+## API Documentation
+
+This modules main focus is to autocreate documentation while developing apis. If schema and response details are passed to decorators accordingly successful documentation can be generated.
+To view documentation use `/api/docs` api (Do not try to addd another api with same name it is reserved).
+
 ## Authors
 
 - **Robert Devasia** - _Initial work_ - [DOCSPLOIT](https://github.com/docsploit)
