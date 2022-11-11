@@ -68,26 +68,35 @@ export class Server {
 
     // Settings up static path
     const projectPath = path.join(process.cwd(), '.espressive');
+
+
     const json = JSON.parse(readFileSync(projectPath).toString('utf-8'))
+
     for (let _folderPath of json.framework.assets) {
-      this.app.use(express.static(path.join(process.cwd(), _folderPath)))
+      if (_folderPath === "/static") {
+        this.app.use(express.static(path.join(process.cwd(), _folderPath)))
+      } else {
+        this.app.use(_folderPath, express.static(path.join(process.cwd(), _folderPath)))
+
+      }
     }
 
   }
 
-  setStaticFolder(path = '', folderPath: string) {
-    this.app.set(path, express.static(folderPath))
-  }
-  run() {
+  run(options?: RunOptions) {
     const port = process.env.PORT || 5000;
     this.app.use('/api', router);
+    this.app.get('*', function (req, res) {
+      const root = path.join(process.cwd(), 'static')
+      res.status(404).sendFile('404.html', { root });
+    });
     this.app.listen(port, () => {
       console.log(bold`Express server is running on`, blueBright('http://localhost:' + port));
     });
   }
 
 }
-
+interface RunOptions { }
 export function register(_path: string, controller: InstanceType<any>) {
   const table = new Table({
     head: ['Method', 'Router'],

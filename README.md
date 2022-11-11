@@ -1,6 +1,3 @@
-[![npm version](https://badge.fury.io/js/angular2-expandable-list.svg)](https://badge.fury.io/js/angular2-expandable-list)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
-
 # Espress Server
 
 > Customized express.js application with additional functions
@@ -20,7 +17,8 @@ $ npm install -S @docsploit/espress
 ```ts
 import { Server } from '@docsploit/espress';
 import modules from './app/modules';
-const app = new Server({ limit: '100mb', cors: [] }, modules, 'Project Name');
+const server = new Server({ limit: '100mb', cors: [] }, modules, 'Project Name');
+server.run();
 ```
 
 - module.controller.ts
@@ -57,7 +55,7 @@ Automated documentation is available based on the modules.
 ### `class` Server
 
 ```js
-const app = new Server({}, modules, 'Project');
+const server = new Server({}, modules, 'Project');
 ```
 
 Main class. express instance is initialized when it is constructed.
@@ -70,6 +68,17 @@ Main class. express instance is initialized when it is constructed.
 |  \_cors   |    CorsOptions    |       To set CORS options       |  false   | default CORS options |
 |  modules  | EspressModuleFile | To register initialized modules |   true   |          -           |
 |   name    |      string       |   To set project name is docs   |   true   |          -           |
+
+#### properties
+
+Sometimes we need handle directly through express. For this facility our `Server` instance will have properties `express` and `app` as per the conventional usage.
+
+```js
+const server = new Server({}, modules, 'Project');
+server.express; // express module
+server.app; // app= express()
+server.run(); // TO run server
+```
 
 ### `decorator` Controller
 
@@ -115,6 +124,8 @@ Decorated REST API Methods.
 |   schema    | JSONSchemaType<T> |           AJV Schema usage            |  false   | undefined |
 |  responses  |    ApiResponse    |  To show Responses in Documentation   |  false   | undefined |
 |   example   |      string       | To show example data in Documentation |  false   | undefined |
+
+**_Note_** _Schema validations do not work with FormData requests due to incompatibility_
 
 ### `method` register()
 
@@ -176,11 +187,11 @@ uploadImage(req:Req,res:res){
 
 #### Params
 
-| parameter |  type  |          usage          | required | default |
-| :-------: | :----: | :---------------------: | :------: | :-----: |
-|  keyName  | string | request-body identifier |   true   |    -    |
-|   path    | string |    file storing path    |   true   |    -    |
-| mimeType  | string |        file type        |   true   |    -    |
+| parameter |   type   |          usage          | required | default |
+| :-------: | :------: | :---------------------: | :------: | :-----: |
+|  keyName  |  string  | request-body identifier |   true   |    -    |
+|   path    |  string  |    file storing path    |   true   |    -    |
+| mimeType  | string[] |        file type        |   true   |    -    |
 
 ### `method` validate()
 
@@ -200,6 +211,27 @@ AJV validator wrapper. By default method decorator have this validation function
 | :-------: | :------------: | :----------: | :------: | :-----: |
 |  schema   | JSONSchemaType |  ajv schema  |   true   |    -    |
 |   body    |     Object     | request data |   true   |    -    |
+
+## Static file
+
+To make a folder static add its path in `.espressive` to enable them
+
+```json
+{
+  "framework": {
+    "version": "1.0.11",
+    "assets": [
+      "/static"
+      // add new path
+    ]
+  }
+}
+```
+
+by default `/static` folder and 404.html file is created when initializing project with **espress**.
+
+- Files in `/static` folder can be access through root path
+- rest of the static folders can be accessed through the same name passed in .espress file.
 
 ## Authors
 
