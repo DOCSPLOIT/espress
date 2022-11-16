@@ -27,7 +27,7 @@
     "@types/node": "latest",
     "@types/express": "latest",
     "@types/multer": "latest",
-    "@types/cors": "^2.8.12",
+    "@types/cors": "^2.8.12"
   },
   "devDependencies": {
     "@types/cli-table": "^0.3.1",
