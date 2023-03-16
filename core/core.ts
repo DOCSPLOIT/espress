@@ -146,7 +146,7 @@ export class Server {
 
 
 
-    public run({versioning=false,version='',dev=true,port=5000}: RunOptions) {
+    public run({versioning=false,version='',dev=true,port=5000}: Partial<RunOptions>) {
 
 
         let apiPath = '/api'
