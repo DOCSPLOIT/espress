@@ -79,7 +79,7 @@ export class Server {
 
     public register(controller) {
 
-        this.controllers.push(controller.name);
+        this.controllers.push(controller.name.toLowerCase());
 
         const comments: any = {};
 
