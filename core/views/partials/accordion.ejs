@@ -1,10 +1,6 @@
 <header>
   <p class="h2 border-bottom border-primary"><%- data.name %></p>
-  <p style="color: var(--bs-gray-400)">
-    <!-- Lorem ipsum dolor, sit amet consectetur adipisicing elit. Soluta optio
-    recusandae vel eos libero, dolorum, molestias accusamus aliquam consequatur
-    illo a error sit omnis -->
-  </p>
+  <p style="color: var(--bs-gray-400)"><%- data.desc %></p>
   <h5 class="border-bottom border-primary">ROUTES</h5>
   <div class="accordion" id="accordionApiScheme">
     <% for( let datum of data.routers ) { %>
@@ -14,24 +10,30 @@
           class="accordion-button text-white collapsed"
           type="button"
           data-bs-toggle="collapse"
-          data-bs-target="#collapse<%- datum.name+datum.method%>"
+          data-bs-target="#collapse<%- datum.function+datum.method%>"
           data-method="<%- datum.method%>"
           aria-expanded="false"
-          aria-controls="collapse<%- datum.name+datum.method%>"
+          aria-controls="collapse<%- datum.function+datum.method%>"
         >
           <p class="p-1 my-0 rounded"><%- datum.method %></p>
           <h class="p-1 mx-3"><%- datum.name%></h>
           <i class="badge bg-secondary"><%- datum.path %></i>
-          <!-- <i class="badge bg-warning text-dark mx-1">No Auth</i> -->
+          <% if(datum.auth) { %>
+          <i class="badge bg-success text-dark mx-1">Auth - <%- datum.auth %></i>
+          <% } else {%>
+          <i class="badge bg-warning text-dark mx-1">No auth</i>
+          <% }%>
+
         </button>
       </h2>
       <div
-        id="collapse<%- datum.name+datum.method%>"
+        id="collapse<%- datum.function+datum.method%>"
         class="accordion-collapse collapse"
-        aria-labelledby="heading<%- datum.name+datum.method%>"
+        aria-labelledby="heading<%- datum.function+datum.method%>"
         data-bs-parent="#accordionApiScheme"
       >
         <div class="accordion-body">
+          <p style="color: var(--bs-gray-400)"><%- datum.desc %></p>
           <h5 class="border-bottom border-secondary my-1">Request</h5>
           <% if (datum.method!=='GET') { %>
           <div class="my-2">
@@ -44,9 +46,7 @@
             <i class="badge bg-primary"><%- datum.schema.length>0 %></i>
           </div>
           <% }%>
-          <table
-            class="table table-striped text-center table-responsive table-dark"
-          >
+          <table class="table table-striped text-center table-responsive table-dark">
             <thead>
               <tr>
                 <th scope="col">Property</th>
@@ -72,35 +72,27 @@
               <tr>
                 <th>Status</th>
                 <th>Info</th>
-                <th>Response</th>
               </tr>
             </thead>
             <tbody>
               <% for( let response of datum.responses ) { %>
               <tr>
                 <td>
-                  <% if (response.status===200) { %>
-                  <i class="badge bg-success text-dark"
-                    ><%- response.status%></i
-                  >
+                  <% if (response.code===200) { %>
+                  <i class="badge bg-success text-dark"><%- response.code%></i>
                   <% } else {%>
-                  <i class="badge" style="background: var(--bs-pink)"
-                    ><%- response.status%></i
-                  >
+                  <i class="badge" style="background: var(--bs-pink)"><%- response.code%></i>
                   <% } %>
                 </td>
-                <td><small><%- response.reason%></small></td>
-                <td><code><%- JSON.stringify(response.response)%></code></td>
+                <td><small><%- response.message%></small></td>
               </tr>
               <% } %>
             </tbody>
           </table>
-          <h5 class="border-bottom border-secondary my-3">Example</h5>
+          <!-- <h5 class="border-bottom border-secondary my-3">Example</h5>
           <div class="card">
-            <code style="white-space: pre-line; color: wheat">
-              <%- datum.example %>
-            </code>
-          </div>
+            <code style="white-space: pre-line; color: wheat"> <%- datum.example %> </code>
+          </div> -->
         </div>
       </div>
     </div>

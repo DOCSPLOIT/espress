@@ -1,4 +1,4 @@
-# Espress Server
+# Express JS Boilerplate
 
 > Customized express.js application with additional functions
 
@@ -16,20 +16,20 @@ $ npm install -S @docsploit/espress
 
 ```ts
 import { Server } from '@docsploit/espress';
-import modules from './app/modules';
-const server = new Server({ limit: '100mb', cors: [] }, modules, 'Project Name');
+
+const server = new Server('Project Name',<options>);
+
 server.run();
 ```
 
 - module.controller.ts
 
 ```ts
-import { Controller, Req, Res } from '@docsploit/espress';
-import { GET, POST } from '@docsploit/espress/build/methods';
+import { Controller, Req, Res, GET, POST } from '@docsploit/router';
+
 import AuthModel from './auth.model';
-@Controller
-export default class Auth {
-  @POST<AuthModel>('', [], {
+
+const authSchema={
     type: 'object',
     required: ['passowrd', 'username'],
     properties: {
@@ -40,15 +40,33 @@ export default class Auth {
         type: 'string',
       },
     },
-  })
-  login(req: Req, res: Res) {}
+  }
+/**
+ *
+ * @name Auth
+ * 
+ * @desc Authentication module
+ * 
+ *  
+ */
+@Controller('/auth')
+export default class Auth {
+  /**
+    * @name Login
+    * 
+    * @desc Login users using username and password
+    * 
+    * @response 500="Internal Server Error",400="Bad Request",455="Bad Gateway"
+    * 
+    */
+  @POST<AuthModel>('/',{schema:authSchema,middleware:[]})
+  async login(req: Req, res: Res) {...}
+
 }
 ```
 
-Server by default runs at port 5000 if no $PORT provided.
-Automated documentation is available based on the modules.
-`http://localhost:5000/api/docs`
-**Note : module methods' name is considered to be api route name. So define method name precisely.**
+Server by default runs at port 5000 if it is not provided.
+
 
 ## API
 
@@ -64,14 +82,13 @@ Main class. express instance is initialized when it is constructed.
 
 | parameter |       type        |              usage              | required |       default        |
 | :-------: | :---------------: | :-----------------------------: | :------: | :------------------: |
-|   limit   |      string       |    To set limit on JSON data    |  false   |       '100mb'        |
-|  \_cors   |    CorsOptions    |       To set CORS options       |  false   | default CORS options |
-|  modules  | EspressModuleFile | To register initialized modules |   true   |          -           |
-|   name    |      string       |   To set project name is docs   |   true   |          -           |
+|   name   |      string       |    Project Name    |  true   |       -        |
+|  props   |    ServerOptions    |       To set CORS and JSON options       |  false   | default CORS and JSON options |
+
 
 #### properties
 
-Sometimes we need handle directly through express. For this facility our `Server` instance will have properties `express` and `app` as per the conventional usage.
+For deep handling `Server` instance initialize properties `express` and `app`.
 
 ```js
 const server = new Server({}, modules, 'Project');
@@ -83,69 +100,62 @@ server.run(); // TO run server
 ### `decorator` Controller
 
 ```ts
-@Controller
+@Controller(path)
 class User {}
 ```
 
-Controller decorator is needed for in order to work the method decorators. Every modules are under `Controller`
+Controller decorator is needed, in order to work the method decorators. Every modules should be decorated using `Controller` which has a parameter path which act as base route
 
-### `decorator` GET,POST,PUT,DELETE
+### `decorator` Get,Post,Put,Delete,Patch
 
 ```ts
-@Controller
+@Controller('/user')
 class User{
-    @GET<Users>('/',[authorization()],{
-        type:'object',
-        properties:{
-            name:{
-                type:'string'
-            }
-        }
-        required:['name']
-    },[
-        {status:500,response:{message:'Internal Server Error',reason:'Server Error'}},
-        {status:400,response:{message:'Bad Request',reason:'Invalid data passed'}},
-        {status:200,response:{message:'Success',reason:'Successful Request'}},
-    ],'/api/user?name=Joe%20Doe')
+    @GET('/all')
     getAll(req:Req,res:Res){
 
     }
 }
 ```
-
-Decorated REST API Methods.
+In this example the generated route will be `/api/<version>/user/all`
 
 #### Params
 
 |  parameter  |       type        |                 usage                 | required |  default  |
 | :---------: | :---------------: | :-----------------------------------: | :------: | :-------: |
 |    path     |      string       |              router path              |   true   |     -     |
-| middlewares |       any[]       |     to apply middleware to route      |  false   |    []     |
-|   schema    | JSONSchemaType<T> |           AJV Schema usage            |  false   | undefined |
-|  responses  |    ApiResponse    |  To show Responses in Documentation   |  false   | undefined |
-|   example   |      string       | To show example data in Documentation |  false   | undefined |
+| options |       RouteOptions       |     middleware and schema      |  false   |    undefined     |
+
+
 
 **_Note_** _Schema validations do not work with FormData requests due to incompatibility_
 
 ### `method` register()
 
-This function register the modules to express application. A table in console will appear with data if any module is registered.
-
+This function register the modules to express application.
 ```ts
-import register from '@docsploit/espress';
-import User from './app/user/user.controller';
+import { Server } from '@docsploit/espress/core';
+import ExampleController from './app/Example/Example.controller';
 
-register('/user', User);
 
-export default this;
+const server = new Server('Example', {});
+
+server.register(ExampleController)
+
+server.run({
+    dev: true,
+    versioning: true,
+    version: 'v1',
+    port: 3000
+})
+
 ```
 
 #### Params
 
 | parameter  |    type     |        usage        | required | default |
 | :--------: | :---------: | :-----------------: | :------: | :-----: |
-|    path    |   string    | parent router path  |   true   |    -    |
-| controller | Constructor | register controller |   true   |    -    |
+|    controller    |   Class    | Controller  |   true   |    -    |
 
 ## - Utilities
 
@@ -179,7 +189,7 @@ Predefined multer middleware for handling files in indigenous way
 ### `method` multerSingleHandler () and multerMultiFieldHandler()
 
 ```ts
-@GET('/',[multerSingleField('profile','static/profiles','image/jpeg')])
+@GET('/',{middleware:[multerSingleField('profile','static/profiles','image/jpeg')]})
 uploadImage(req:Req,res:res){
     const image = req.body.profile;
     ...
@@ -196,7 +206,7 @@ uploadImage(req:Req,res:res){
 ### `method` validate()
 
 ```ts
-    import {validate} from '@docsploit/espress/validator'
+    import {validate} from '@docsploit/espress/schemaValidator'
     ...
     const data = req.body;
     const schema ={...}
@@ -219,7 +229,7 @@ To make a folder static add its path in `.espressive` to enable them
 ```json
 {
   "framework": {
-    "version": "1.0.11",
+    "version": "1.0.16",
     "assets": [
       "/static"
       // add new path
@@ -235,8 +245,7 @@ by default `/static` folder and 404.html file is created when initializing proje
 
 ## API Documentation
 
-This modules main focus is to autocreate documentation while developing apis. If schema and response details are passed to decorators accordingly successful documentation can be generated.
-To view documentation use `/api/docs` api (Do not try to addd another api with same name it is reserved).
+
 
 ## Authors
 
