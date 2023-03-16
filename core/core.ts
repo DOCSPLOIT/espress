@@ -146,15 +146,14 @@ export class Server {
 
 
 
-    public run(options: RunOptions) {
+    public run({versioning=false,version='',dev=true,port=5000}: RunOptions) {
 
-        const port = options.port || 5000;
 
         let apiPath = '/api'
 
-        if (options.versioning && options.version) {
+        if (versioning && version) {
 
-            apiPath = apiPath + '/' + options.version
+            apiPath = apiPath + '/' + version
 
         }
 
@@ -202,7 +201,7 @@ export class Server {
 
             console.log(chalk.bold` Express server is running on`, chalk.blueBright`http://localhost:` + port);
 
-            if (options.dev) {
+            if (dev) {
 
                 console.log(chalk.bold` Api documentations are available at`, chalk.blueBright`http://localhost:${port}${apiPath}/docs`);
 
