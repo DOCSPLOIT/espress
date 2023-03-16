@@ -20,7 +20,7 @@ interface RunOptions {
 
 }
 
-export const app = express();
+const app = express();
 
 
 export class Server {
