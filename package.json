@@ -1,6 +1,6 @@
 {
   "name": "@docsploit/espress",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "description": "Customized express.js boilerplate",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
