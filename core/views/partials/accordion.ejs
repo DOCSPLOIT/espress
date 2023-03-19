@@ -56,13 +56,15 @@
               </tr>
             </thead>
             <tbody>
-              <% for( let schema of datum.schema ) { %>
-              <tr>
-                <td><%- schema.property%></td>
-                <td><%- schema.type%></td>
-                <td><%- schema.format%></td>
-                <td><i class="badge bg-info">true</i></td>
-              </tr>
+              <% if (datum.schema) { %>
+                <% for( let schema of datum.schema ) { %>
+                  <tr>
+                    <td><%- schema.property%></td>
+                    <td><%- schema.type%></td>
+                    <td><%- schema.format%></td>
+                    <td><i class="badge bg-info">true</i></td>
+                  </tr>
+                  <% } %>
               <% } %>
             </tbody>
           </table>
@@ -75,17 +77,19 @@
               </tr>
             </thead>
             <tbody>
-              <% for( let response of datum.responses ) { %>
-              <tr>
-                <td>
-                  <% if (response.code===200) { %>
-                  <i class="badge bg-success text-dark"><%- response.code%></i>
-                  <% } else {%>
-                  <i class="badge" style="background: var(--bs-pink)"><%- response.code%></i>
+              <% if (datum.responses) { %>
+                <% for( let response of datum.responses ) { %>
+                  <tr>
+                    <td>
+                      <% if (response.code===200) { %>
+                      <i class="badge bg-success text-dark"><%- response.code%></i>
+                      <% } else {%>
+                      <i class="badge" style="background: var(--bs-pink)"><%- response.code%></i>
+                      <% } %>
+                    </td>
+                    <td><small><%- response.message%></small></td>
+                  </tr>
                   <% } %>
-                </td>
-                <td><small><%- response.message%></small></td>
-              </tr>
               <% } %>
             </tbody>
           </table>

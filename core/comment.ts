@@ -33,22 +33,28 @@ export const getComments = (directory, container) => {
 
                 if (ts.isClassDeclaration(statement)) {
 
-                    const doc = (statement as any).jsDoc[0];
+                    let doc = (statement as any).jsDoc
 
-                    doc.tags?.map((t) => {
+                    if(doc){
 
-                        if (t.tagName.escapedText === 'name') {
+                        doc=doc[0];
 
-                            container.name = t.comment?.toString();
+                        doc.tags?.map((t) => {
 
-                        }
-
-                        if (t.tagName.escapedText === 'desc') {
-
-                            container.desc = t.comment?.toString();
-
-                        }
-                    });
+                            if (t.tagName.escapedText === 'name') {
+    
+                                container.name = t.comment?.toString();
+    
+                            }
+    
+                            if (t.tagName.escapedText === 'desc') {
+    
+                                container.desc = t.comment?.toString();
+    
+                            }
+                        });
+                    }
+                    
 
                     container.methods = []
 
@@ -103,7 +109,7 @@ export const getComments = (directory, container) => {
 
                         } else {
 
-                            console.log(chalk.yellow` You haven't provided comments on "${directory}" members skipping`)
+                            console.log(chalk.yellow` You haven't provided comments on "${directory}" member "${method.FunctionName}" skipping`)
 
                         }
 
@@ -115,7 +121,7 @@ export const getComments = (directory, container) => {
 
         } else {
 
-            throw Error('Error while creating documentation:: create issue in the repo please!')
+            // throw Error('Error while creating documentation:: create issue in the repo please!')
 
         }
 

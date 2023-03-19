@@ -85,7 +85,7 @@ export class Server {
 
         const doc: any = {};
 
-        getComments(controller.name, comments);
+        getComments(controller.name.toLowerCase(), comments);
 
         doc.name = controller.name;
 
@@ -184,7 +184,7 @@ export class Server {
 
             const _module = this.document.filter(t => t.name.toLowerCase() === moduleName)[0];
 
-            res.render('index', { modules: this.controllers, data: _module, name: this.name })
+            return res.render('index', { modules: this.controllers, data: _module, name: this.name })
 
         })
 
