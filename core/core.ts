@@ -6,7 +6,7 @@ import path from 'path';
 import { filterSchema, setStaticPaths } from './helpers';
 import chalk from 'chalk';
 import { getComments } from './comment';
-
+import {router} from './router'
 interface ServerOptions {
     json?: bodyParser.OptionsJson;
     cors?: cors.CorsOptions
@@ -157,7 +157,7 @@ export class Server {
 
         }
 
-        // this.app.use(apiPath, router); 
+        this.app.use(apiPath, router);
 
         /**
         * 
