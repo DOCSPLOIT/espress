@@ -53,7 +53,7 @@ export function filterSchema(schema, parentName = '') {
         } else {
           const obj = {
             property: propName,
-            isRequired: schema.required.includes(prop),
+            isRequired:schema.required? schema.required.includes(prop):false,
             type: propSchema.type,
             format: propSchema.format ?? '-',
           };

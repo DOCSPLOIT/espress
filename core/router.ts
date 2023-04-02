@@ -38,8 +38,8 @@ export function Controller(path: string) {
         Reflect.defineMetadata('route',routePath,constructor.prototype,key);
 
         router[method](routePath, middleware, async (req: Request, res: Response, next: NextFunction) => {
-
-          if (schema) {
+          const contentType = req.headers['content-type']?.includes('application/json')
+          if (schema ) {
 
             let body: any = {};
 
@@ -49,12 +49,13 @@ export function Controller(path: string) {
 
             }
 
-            if (method === 'post' || method === 'put') {
+            if ((method === 'post' || method === 'put') && contentType ) {
 
               body = req.body;
 
             }
-            const validation = validate(body, schema);
+            
+            const validation = validate(schema, body);
 
             if (validation !== true) {
 
@@ -113,12 +114,12 @@ function createMethodDecorator<T>(method: string, path: string, options?: RouteO
 }
 
 
-export const Get = <T>(path: string, options: RouteOptions<T>) => createMethodDecorator<T>('get', path, options);
+export const Get = <T>(path: string, options?: RouteOptions<T>) => createMethodDecorator<T>('get', path, options);
 
-export const Post = <T>(path: string, options: RouteOptions<T>) => createMethodDecorator<T>('post', path, options);
+export const Post = <T>(path: string, options?: RouteOptions<T>) => createMethodDecorator<T>('post', path, options);
 
-export const Put = <T>(path: string, options: RouteOptions<T>) => createMethodDecorator<T>('put', path, options);
+export const Put = <T>(path: string, options?: RouteOptions<T>) => createMethodDecorator<T>('put', path, options);
 
-export const Patch = <T>(path: string, options: RouteOptions<T>) => createMethodDecorator<T>('patch', path, options);
+export const Patch = <T>(path: string, options?: RouteOptions<T>) => createMethodDecorator<T>('patch', path, options);
 
-export const Delete = <T>(path: string, options: RouteOptions<T>) => createMethodDecorator<T>('delete', path, options);
+export const Delete = <T>(path: string, options?: RouteOptions<T>) => createMethodDecorator<T>('delete', path, options);

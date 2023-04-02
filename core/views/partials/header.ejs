@@ -7,9 +7,9 @@
   </div>
   <% for( let i = 0; i < modules.length; i++ ) { %>
   <a
-    href="/api/docs/<%- modules[i].toLowerCase()%>"
+    href="<%= path %>/docs/<%- modules[i].toLowerCase()%>"
     data-route="auth"
-    class="text-decoration-none col-12 p-2 <%- data.name===modules[i]?'active':'' %>"
+    class="text-decoration-none col-12 p-2 <%- data.name.toLowerCase()===modules[i]?'active':'' %>"
     ><%- modules[i] %></a
   >
   <% } %>

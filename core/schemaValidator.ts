@@ -41,3 +41,5 @@ export default function validate<T>(
     return false;
   }
 }
+
+export type ValidationSchema<T> = JSONSchemaType<T>

@@ -3,12 +3,17 @@ import bodyParser from 'body-parser'
 import morgan from 'morgan';
 import cors from 'cors';
 import path from 'path';
-import { filterSchema, setStaticPaths } from './helpers';
+import dotenv from 'dotenv'
 import chalk from 'chalk';
+import { filterSchema, setStaticPaths } from './helpers';
 import { getComments } from './comment';
-import {router} from './router'
+import { router } from './router'
+
+dotenv.config();
 interface ServerOptions {
+
     json?: bodyParser.OptionsJson;
+
     cors?: cors.CorsOptions
 }
 
@@ -43,13 +48,13 @@ export class Server {
          * 
          * Initialization
          */
-        if (props) {
 
-            this.app.use(express.json(props.json));
 
-            this.app.use(cors(props.cors));
-            
-        }
+        this.app.use(express.json(props?.json));
+
+        this.app.use(cors(props?.cors));
+
+
 
         this.app.use(morgan('combined'));
 
@@ -146,7 +151,7 @@ export class Server {
 
 
 
-    public run({versioning=false,version='',dev=true,port=5000}: Partial<RunOptions>) {
+    public run({ versioning = false, version = '', dev = true, port = 5000 }: Partial<RunOptions>) {
 
 
         let apiPath = '/api'
@@ -184,7 +189,7 @@ export class Server {
 
             const _module = this.document.filter(t => t.name.toLowerCase() === moduleName)[0];
 
-            return res.render('index', { modules: this.controllers, data: _module, name: this.name })
+            return res.render('index', { modules: this.controllers, data: _module, name: this.name,path:apiPath })
 
         })
 
