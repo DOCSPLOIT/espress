@@ -14,12 +14,7 @@ export function sendSuccessResponse<T>(message: string, data: T, res: Response) 
 }
 
 export function getEnv(envStr: string): string {
-  if (
-    Object.keys(process.env).includes(envStr)
-
-  ) {
+  if (Object.keys(process.env).includes(envStr)) {
     return process.env[envStr]!;
-
-  } else throw Error(envStr + '\s is not DEFINED')
-
+  } else throw Error(envStr + 's is not DEFINED');
 }

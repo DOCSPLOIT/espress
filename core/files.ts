@@ -86,8 +86,7 @@ export function multerMultiFieldHandler(keyNames: Field[], folderPath: string, m
           }
         }
         console.log(err);
-        return sendErrorResponse(500, 'Internal Server Error', res)
-
+        return sendErrorResponse(500, 'Internal Server Error', res);
       } else {
         next();
       }
