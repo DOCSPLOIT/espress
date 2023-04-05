@@ -8,6 +8,7 @@ import chalk from 'chalk';
 import { filterSchema, setStaticPaths } from './helpers';
 import { getComments } from './comment';
 import { router } from './router';
+import { readFileSync } from 'fs';
 
 dotenv.config();
 interface ServerOptions {
@@ -18,8 +19,6 @@ interface ServerOptions {
 
 interface RunOptions {
   port: number | string;
-  dev: boolean;
-  versioning: boolean;
   version: string;
 }
 
@@ -36,9 +35,15 @@ export class Server {
 
   private name = '';
 
+  private espressConfig;
+
   constructor(name: string, props?: ServerOptions) {
     this.name = name;
+    const fileBuffer = readFileSync(path.join(process.cwd(), '.espressive')).toString('utf-8');
 
+    const espressConfig = JSON.parse(fileBuffer);
+
+    this.espressConfig = espressConfig;
     /**
      *
      * Initialization
@@ -68,67 +73,79 @@ export class Server {
 
     setStaticPaths(this.app);
   }
-
+/**
+ * 
+ * @param controller 
+ * register the controller with router and creates documentation.
+ */
   public register(controller) {
-    this.controllers.push(controller.name.toLowerCase());
+    if (this.espressConfig.environment === "development") {
+      this.controllers.push(controller.name.toLowerCase());
 
-    const comments: any = {};
+      const comments: any = {};
 
-    const doc: any = {};
+      const doc: any = {};
 
-    getComments(controller.name.toLowerCase(), comments);
+      getComments(controller.name.toLowerCase(), comments);
 
-    doc.name = controller.name;
+      doc.name = controller.name;
 
-    doc.desc = comments.desc;
+      doc.desc = comments.desc;
 
-    doc.routers = [];
+      doc.routers = [];
 
-    for (let key of Object.getOwnPropertyNames(controller.prototype)) {
-      if (key !== 'constructor') {
-        const route = Reflect.getMetadata('route', controller.prototype, key);
+      for (let key of Object.getOwnPropertyNames(controller.prototype)) {
+        if (key !== 'constructor') {
+          const route = Reflect.getMetadata('route', controller.prototype, key);
 
-        const method = Reflect.getMetadata('method', controller.prototype, key);
+          const method = Reflect.getMetadata('method', controller.prototype, key);
 
-        const schema = Reflect.getMetadata('schema', controller.prototype, key);
+          const schema = Reflect.getMetadata('schema', controller.prototype, key);
 
-        const classMethod = comments.methods.filter((t) => t.FunctionName === key)[0];
+          const classMethod = comments.methods.filter((t) => t.FunctionName === key)[0];
 
-        const routeObj: any = {
-          name: classMethod.name,
+          const routeObj: any = {
+            name: classMethod.name,
 
-          function: classMethod.FunctionName,
+            function: classMethod.FunctionName,
 
-          responses: classMethod.response,
+            responses: classMethod.response,
 
-          example: '',
+            example: '',
 
-          desc: classMethod.desc,
+            desc: classMethod.desc,
 
-          method: method,
+            method: method,
 
-          path: route,
+            path: route,
 
-          auth: classMethod.auth ?? false,
-        };
+            auth: classMethod.auth ?? false,
+          };
 
-        if (schema) {
-          const filteredSchema = filterSchema(schema);
+          if (schema) {
+            const filteredSchema = filterSchema(schema);
+            
+            (routeObj.bodyType = schema.type), (routeObj.schema = filteredSchema);
+          }
 
-          (routeObj.bodyType = schema.type), (routeObj.schema = filteredSchema);
+          doc.routers.push(routeObj);
         }
-
-        doc.routers.push(routeObj);
       }
-    }
 
-    this.document.push(doc);
+      this.document.push(doc);
+    }
   }
 
-  public run({ versioning = false, version = '', dev = true, port = 5000 }: Partial<RunOptions>) {
+  /**
+   * 
+   * @param RunOptions
+   * 
+   * this method invokes the server
+   */
+  public run({  version, port = 5000 }: Partial<RunOptions>) {
     let apiPath = '/api';
 
-    if (versioning && version) {
+    if (version) {
       apiPath = apiPath + '/' + version;
     }
 
@@ -138,23 +155,26 @@ export class Server {
      *
      * Documentation API
      */
-    this.app.get(apiPath + '/docs', (req, res) => {
-      if (this.document.length > 0) {
-        const firstModule = this.document[0];
+    if (this.espressConfig.environment==="development") {
+      this.app.get(apiPath + '/docs', (req, res) => {
+        if (this.document.length > 0) {
+          const firstModule = this.document[0];
 
-        res.redirect(apiPath + `/docs/${firstModule.name.toLowerCase()}`);
-      } else {
-        res.status(455).send('No modules added, try add some');
-      }
-    });
+          res.redirect(apiPath + `/docs/${firstModule.name.toLowerCase()}`);
+        } else {
+          res.status(455).send('No modules added, try add some');
+        }
+      });
 
-    this.app.get(apiPath + '/docs/:module', (req, res) => {
-      const moduleName = req.params.module;
 
-      const _module = this.document.filter((t) => t.name.toLowerCase() === moduleName)[0];
+      this.app.get(apiPath + '/docs/:module', (req, res) => {
+        const moduleName = req.params.module;
 
-      return res.render('index', { modules: this.controllers, data: _module, name: this.name, path: apiPath });
-    });
+        const _module = this.document.filter((t) => t.name.toLowerCase() === moduleName)[0];
+
+        return res.render('index', { modules: this.controllers, data: _module, name: this.name, path: apiPath });
+      });
+    }
 
     this.app.get('*', (req, res) => {
       const root = path.join(process.cwd(), 'static');
@@ -165,7 +185,7 @@ export class Server {
     this.app.listen(port, () => {
       console.log(chalk.bold` Express server is running on`, chalk.blueBright`http://localhost:` + port);
 
-      if (dev) {
+      if (this.espressConfig.environment==="development") {
         console.log(
           chalk.bold` Api documentations are available at`,
           chalk.blueBright`http://localhost:${port}${apiPath}/docs`,

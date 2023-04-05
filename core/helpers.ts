@@ -43,7 +43,7 @@ export function filterSchema(schema, parentName = '') {
 
       if (propSchema.type === 'object') {
         const obj = filterSchema(propSchema, propName);
-        result.push(obj);
+        result.push(...obj);
       } else {
         const obj = {
           property: propName,
