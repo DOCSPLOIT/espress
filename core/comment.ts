@@ -11,7 +11,7 @@ export const getComments = (directory, container) => {
   const rootPath = espressConfig.module.root;
 
   if (rootPath) {
-    const file = path.join(process.cwd(), rootPath, directory, `${directory}.controller.ts`);
+    const file = path.join(process.cwd(), rootPath, directory, `${directory}.controller.${espressConfig.environment==="development"?"ts":"d.ts"}`);
 
     const program = ts.createProgram([file], {
       module: ts.ModuleKind.CommonJS,
