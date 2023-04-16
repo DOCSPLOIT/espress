@@ -20,6 +20,7 @@ interface ServerOptions {
 interface RunOptions {
   port: number | string;
   version: string;
+  apiDocs:boolean
 }
 
 const app = express();
@@ -79,7 +80,7 @@ export class Server {
  * register the controller with router and creates documentation.
  */
   public register(controller) {
-    if (this.espressConfig.environment === "development") {
+    // if (this.espressConfig.environment === "development") {
       this.controllers.push(controller.name.toLowerCase());
 
       const comments: any = {};
@@ -133,7 +134,7 @@ export class Server {
       }
 
       this.document.push(doc);
-    }
+    // }
   }
 
   /**
@@ -142,7 +143,7 @@ export class Server {
    * 
    * this method invokes the server
    */
-  public run({  version, port = 5000 }: Partial<RunOptions>) {
+  public run({  version, port = 5000,apiDocs=true }: Partial<RunOptions>) {
     let apiPath = '/api';
 
     if (version) {
@@ -155,7 +156,7 @@ export class Server {
      *
      * Documentation API
      */
-    if (this.espressConfig.environment==="development") {
+    if (apiDocs) {
       this.app.get(apiPath + '/docs', (req, res) => {
         if (this.document.length > 0) {
           const firstModule = this.document[0];
@@ -185,7 +186,7 @@ export class Server {
     this.app.listen(port, () => {
       console.log(chalk.bold` Express server is running on`, chalk.blueBright`http://localhost:` + port);
 
-      if (this.espressConfig.environment==="development") {
+      if (apiDocs) {
         console.log(
           chalk.bold` Api documentations are available at`,
           chalk.blueBright`http://localhost:${port}${apiPath}/docs`,
