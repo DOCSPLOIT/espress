@@ -143,7 +143,7 @@ const server = new Server('Example', {});
 server.register(ExampleController)
 
 server.run({
-    dev: true,
+    apiDocs:true,
     versioning: true,
     version: 'v1',
     port: 3000
